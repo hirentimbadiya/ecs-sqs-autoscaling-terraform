@@ -1,6 +1,20 @@
 ###############################################################################
 # Step Scaling — scale ECS tasks 1:1 with SQS queue depth, scale to zero
 ###############################################################################
+terraform {
+  required_version = ">= 1.5"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
+
 
 locals {
   service_name = "${var.env}-worker-step"

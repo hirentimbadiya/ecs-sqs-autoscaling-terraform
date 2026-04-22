@@ -3,6 +3,12 @@ variable "env" {
   type        = string
 }
 
+variable "region" {
+  description = "AWS region"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "ecs_cluster_name" {
   description = "Name of the ECS cluster"
   type        = string

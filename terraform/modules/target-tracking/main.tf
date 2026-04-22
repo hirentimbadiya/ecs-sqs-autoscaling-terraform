@@ -1,6 +1,20 @@
 ###############################################################################
 # Target Tracking — maintain a target backlog-per-task from SQS
 ###############################################################################
+terraform {
+  required_version = ">= 1.5"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
+
 
 locals {
   service_name = "${var.env}-worker-target"

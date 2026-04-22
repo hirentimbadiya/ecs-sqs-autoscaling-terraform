@@ -1,6 +1,20 @@
 ###############################################################################
 # Shared base infrastructure: VPC, ECS Cluster, SQS, ECR, Task Definition, IAM
 ###############################################################################
+terraform {
+  required_version = ">= 1.5"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}
+
 
 locals {
   required_tags = {
@@ -18,7 +32,7 @@ resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = merge(local.required_tags, var.tags, { Name = "${var.env}-vpc" })
+  tags                 = merge(local.required_tags, var.tags, { Name = "${var.env}-vpc" })
 }
 
 resource "aws_internet_gateway" "main" {
@@ -31,7 +45,7 @@ resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidr
   availability_zone       = var.availability_zones[0]
   map_public_ip_on_launch = true
-  tags = merge(local.required_tags, var.tags, { Name = "${var.env}-public" })
+  tags                    = merge(local.required_tags, var.tags, { Name = "${var.env}-public" })
 }
 
 resource "aws_route_table" "public" {
@@ -65,7 +79,7 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
-  tags = merge(local.required_tags, var.tags, { Name = "${var.env}-private-${count.index}" })
+  tags              = merge(local.required_tags, var.tags, { Name = "${var.env}-private-${count.index}" })
 }
 
 resource "aws_route_table" "private" {
@@ -117,7 +131,7 @@ resource "aws_sqs_queue" "work_dlq" {
   name                      = "${var.env}-worker-dlq"
   message_retention_seconds = 1209600
   sqs_managed_sse_enabled   = true
-  tags = merge(local.required_tags, var.tags, { Name = "${var.env}-worker-dlq" })
+  tags                      = merge(local.required_tags, var.tags, { Name = "${var.env}-worker-dlq" })
 }
 
 resource "aws_sqs_queue" "work" {
